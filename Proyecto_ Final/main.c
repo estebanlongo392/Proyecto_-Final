@@ -58,25 +58,25 @@ int main(void) {
 		switch (Estado) {
 			case 0:
 			PORTC = (1 << PC0); // Enciende el LED en PC0
-
+			//lectura ADC 6 para el PWM 1A
 			_delay_ms(10);
 			DutyC1 = ADC_CONVERT(6);
 			updateDutyCA1(DutyC1);
-
+			//lectura ADC 6 para el PWM 2A
 			_delay_ms(10);
 			DutyC2 = ADC_CONVERT(4);
 			updateDutyCA2(DutyC2);
-
+			//lectura ADC 6 para el PWM 1B
 			_delay_ms(10);
 			DutyC3 = ADC_CONVERT(5);
 			updateDutyCB1(DutyC3);
-
+			//lectura ADC 7 para el PWM 2B
 			_delay_ms(10);
 			DutyC4 = ADC_CONVERT(7);
 			updateDutyCB2(DutyC4);
 
 			break;
-			
+			//lectura de la memoria EEPROM
 			case 1:
 			PORTC = (1 << PC1); // Enciende el LED en PC1
 
@@ -93,6 +93,7 @@ int main(void) {
 	}
 }
 
+//Interrupcion para cambios de estado 
 ISR(PCINT2_vect) {
 	if ((PIND & (1 << PIND7)) == 0) {
 		_delay_ms(50);
@@ -103,7 +104,7 @@ ISR(PCINT2_vect) {
 			}
 		}
 	}
-	
+	//Guardado de las 2 posiciones en la EEPROM con los botones en el puerto D
 	else if ((PIND & (1 << PIND4)) == 0) {
 		
 		PORTC = (1 << PC2);
@@ -143,8 +144,9 @@ ISR(PCINT2_vect) {
 		}
 	}
 }
-
+//Interrupciones por botones
 ISR(PCINT0_vect) {
+	//Guardado de las 2 posiciones en la EEPROM con los botones en el puerto B
 	if ((PINB & (1 << PINB0)) == 0) {
 		PORTC = (1 << PC2);
 		if (Estado == 0) {
@@ -184,7 +186,7 @@ ISR(PCINT0_vect) {
 	}
 	
 }
-
+//Modulo de lectura de le EEPROM 
 unsigned char R_eeprom(unsigned int Adress) {
 	// Esperar la finalización de la escritura anterior
 	while (EECR & (1 << EEPE));
@@ -195,7 +197,7 @@ unsigned char R_eeprom(unsigned int Adress) {
 	// Devolver los datos del registro de datos
 	return EEDR;
 }
-
+//Modulo de escritura de le EEPROM 
 void W_eeprom(unsigned int Adress, unsigned char Data) {
 	// Esperar la finalización de la escritura anterior
 	while (EECR & (1 << EEPE));
